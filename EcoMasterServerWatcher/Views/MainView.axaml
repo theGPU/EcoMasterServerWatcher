@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoMasterServerWatcher.ViewModels"
+             xmlns:v="clr-namespace:EcoMasterServerWatcher.Views"
+			 xmlns:utils="clr-namespace:EcoMasterServerWatcher.Utils"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="EcoMasterServerWatcher.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+	<UserControl.Resources>
+		<utils:CursorSelectorConverter x:Key="cursorSelectorConverter"/>
+	</UserControl.Resources>
+
+    <Grid Background="#2b2d31" RowDefinitions="15,*">
+		<Border Grid.Row="0" Background="#1e1f22">
+			<TextBlock HorizontalAlignment="Left" VerticalAlignment="Center">
+				<TextBlock.Text>
+					<MultiBinding StringFormat="Eco master server watcher (servers: {0}/{1} players: {2}/{3}) parse errors: {4}">
+						<Binding Path="TestViewModels.Count"/>
+						<Binding Path="Servers.Count"/>
+						<Binding Path="FiltredPlayers"/>
+						<Binding Path="TotalPlayers"/>
+						<Binding Path="Watcher.SkippedServers"/>						
+					</MultiBinding>
+				</TextBlock.Text>
+			</TextBlock>
+		</Border>
+		<SplitView x:Name="SideViewSplit" Grid.Row="1" IsPaneOpen="{Binding IsPaneOpen}" PanePlacement="Right" DisplayMode="CompactInline" CompactPaneLength="30" OpenPaneLength="640">
+			<SplitView.Pane>
+				<Grid x:Name="SideViewGrid" ColumnDefinitions="auto,*">
+					<Rectangle Grid.Column="0" x:Name="ViewResizeHandlerRectangle" Fill="#171717" Cursor="{Binding IsPaneOpen, Converter={StaticResource cursorSelectorConverter}, ConverterParameter=LeftSide}"/>
+					<ToggleButton Grid.Column="0" IsChecked="{Binding IsPaneOpen, Mode=TwoWay}" VerticalAlignment="Top" Width="30" Height="30" Margin="5">
+						<ToggleButton.Styles>
+								<Style Selector="ToggleButton">
+									<Setter Property="Content" Value="&lt;"/>
+								</Style>
+								<Style Selector="ToggleButton:checked">
+									<Setter Property="Content" Value="&gt;"/>
+								</Style>
+						</ToggleButton.Styles>
+					</ToggleButton>
+					<v:ServerInfoView x:Name="ServerInfoViewSide" Grid.Column="1"/>
+				</Grid>
+			</SplitView.Pane>
+			<Grid x:Name="ContentGrid" Grid.Column="0" RowDefinitions="50,*,auto,auto" ColumnDefinitions="*,auto">
+				<Grid Grid.Row="0" ColumnDefinitions="auto,*" Margin="10">
+					<CheckBox x:Name="SearchCaseSensetiveCheckBox" Grid.Column="0" HorizontalAlignment="Center" Margin="5,0">Case sensetive</CheckBox>
+					<TextBox x:Name="SearchTextBox" Grid.Column="1" Grid.RowSpan="2" Watermark="Search" VerticalContentAlignment="Center" Text="{Binding ServersFilter}"/>
+				</Grid>
+				<DataGrid x:Name="ServersGrid" Grid.Row="1" Margin="5" AutoGenerateColumns="False" CanUserReorderColumns="True" IsReadOnly="True" BorderThickness="1" GridLinesVisibility="All" CanUserResizeColumns="True" SelectionMode="Single" ItemsSource="{Binding TestViewModels}">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Name" FontSize="10" Binding="{Binding ClearDescription}" Width="200"/>
+						<DataGridTextColumn Header="Day" Binding="{Binding CurrentDay}"/>
+						<DataGridTextColumn Header="Left" Binding="{Binding DaysLeft}"/>
+						<DataGridTextColumn Header="OP" Binding="{Binding OnlinePlayers}"/>
+						<DataGridTextColumn Header="TP" Binding="{Binding TotalPlayers}"/>
+						<DataGridTextColumn Header="Laws" Binding="{Binding Laws}"/>
+						<DataGridTextColumn Header="Lang" FontSize="10" Binding="{Binding ShortLanguage}"/>
+						<DataGridTextColumn Header="Version" FontSize="10" Binding="{Binding Version}"/>
+						<DataGridTextColumn Header="Build" Binding="{Binding BuildId}"/>
+						<DataGridTextColumn Header="WorldSize" FontSize="10" Binding="{Binding WorldSize}"/>
+						<DataGridTextColumn Header="Plants" Binding="{Binding Plants}"/>
+						<DataGridTextColumn Header="Animals" Binding="{Binding Animals}"/>
+					</DataGrid.Columns>
+				</DataGrid>
+				<GridSplitter x:Name="BottomViewSplitter" Grid.Row="2" Background="Black" ResizeDirection="Rows" IsVisible="False"/>
+				<v:ServerInfoView x:Name="ServerInfoViewBottom" Grid.Row="3" IsVisible="False"/>
+			</Grid>
+		</SplitView>
+    </Grid>
+</UserControl>

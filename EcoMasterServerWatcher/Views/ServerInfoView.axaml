@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:EcoMasterServerWatcher.ViewModels"
+             xmlns:v="clr-namespace:EcoMasterServerWatcher.Views"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
+             x:Class="EcoMasterServerWatcher.Views.ServerInfoView"
+			 x:DataType="vm:ServerInfoViewModel"
+			 Background="#232428">
+			 
+	<Design.DataContext>
+	<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:ServerInfoViewModel />
+	</Design.DataContext>
+
+	<ScrollViewer>
+		<StackPanel Spacing="5" Margin="5,0">
+			<Label HorizontalAlignment="Center">Server info</Label>
+			<Border Background="#2e3035" CornerRadius="10" Padding="10,0">
+				<StackPanel>
+					<Label HorizontalAlignment="Center">Name</Label>
+					<TextBlock TextWrapping="Wrap" Text="{Binding ServerInfo.ClearDescription, Mode=OneWay}"/>
+				</StackPanel>
+			</Border>
+			<Border x:Name="DescriptionBorder" Background="#2e3035" CornerRadius="10" Padding="10,0" IsVisible="{Binding ServerInfo.DetailedDescription, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+				<StackPanel>
+					<Label HorizontalAlignment="Center">Description</Label>
+					<ScrollViewer MaxHeight="100">
+						<TextBlock TextWrapping="Wrap" Text="{Binding ServerInfo.ClearDetailedDescription, Mode=OneWay}"/>
+					</ScrollViewer>
+				</StackPanel>
+			</Border>
+			<Border Background="#2e3035" CornerRadius="10" Padding="10,0">
+				<Grid ColumnDefinitions="auto,*,auto" Margin="0,5,0,5">
+					<Button x:Name="OpenWebButton" Grid.Column="0" HorizontalAlignment="Center" Click="OpenWebButtonClicked">Open web</Button>
+					<Button x:Name="DiscordButton" Grid.Column="1" HorizontalAlignment="Center" Click="DiscordButtonClicked" IsEnabled="{Binding ServerInfo.DiscordAddress, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">Discord</Button>
+					<Button x:Name="JoinButton" Grid.Column="2" HorizontalAlignment="Center" Click="JoinButtonClicked" IsEnabled="{Binding ServerInfo.JoinUrl, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">Join</Button>
+				</Grid>
+			</Border>
+			<Border x:Name="PlayersBorder" Background="#2e3035" CornerRadius="10" Padding="10,0">
+				<StackPanel>
+					<Label HorizontalAlignment="Center" Content="{Binding ServerInfo.OnlinePlayers, StringFormat='Players: {0}'}"/>
+					<ScrollViewer MaxHeight="400">
+						<ItemsControl ItemsSource="{Binding ServerInfo.OnlinePlayersNames}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<WrapPanel Orientation="Horizontal"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Border Background="#1e1f22" CornerRadius="5" Margin="5">
+										<Label Content="{Binding}"/>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl >
+					</ScrollViewer>
+					<!-- <ListBox Margin="20,5" Background="Transparent" MaxHeight="200" SelectionMode="Single" ItemsSource="{Binding ServerInfo.OnlinePlayersNames}"/> -->
+				</StackPanel>
+			</Border>
+			<Border Background="#2e3035" CornerRadius="10" Padding="10,0">
+				<StackPanel>
+					<Label HorizontalAlignment="Center">Stats</Label>
+					<TextBlock TextWrapping="Wrap" Text="{Binding ServerStats, Mode=OneWay}"/>
+				</StackPanel>
+			</Border>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
