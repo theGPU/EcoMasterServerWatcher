@@ -30,7 +30,7 @@ namespace EcoMasterServerWatcher.Shared
 
         private CancellationTokenSource _cts = null!;
         private CancellationToken _mainCt;
-        private HttpClient _httpClient = new HttpClient();
+        private HttpClient _httpClient = null!;
 
         public int UpdateInterval { get; set; } = 5000;
         public Task MainTask { get; set; } = null!;
@@ -47,6 +47,19 @@ namespace EcoMasterServerWatcher.Shared
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public EMSWatcher()
+        {
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (request, cert, chain, errors) =>
+                {
+                    return true;
+                }
+            };
+
+            _httpClient = new HttpClient(handler);
+        }
 
         public Task Run(ObservableHashSet<ServerInfo>? serverHashset = null, CancellationToken ct = default)
         {
